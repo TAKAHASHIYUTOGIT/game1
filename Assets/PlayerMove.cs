@@ -13,12 +13,14 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] float m_movePower = 5f;
     /// <summary>ジャンプする力</summary>
     [SerializeField] float m_jumpPower = 15f;
+    [SerializeField] bool m_flipX = false;
     //<summary>水平方向の入力値
     float m_h;
     float m_scaleX;
     // Start is called before the first frame update
     int count = 0;
     bool m_isGround = false;
+    bool iswallhit;
     void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
@@ -41,6 +43,11 @@ public class PlayerMove : MonoBehaviour
             _rb.AddForce(Vector2.up * m_jumpPower, ForceMode2D.Impulse);
             count++;
         }
+        //設定に応じて左右を反転させる
+        if (m_flipX)
+        {
+            FlipX(m_h);
+        }
     }
     private object AddForce(float m_jumpPower)
     {
@@ -49,7 +56,10 @@ public class PlayerMove : MonoBehaviour
 
     private void FixedUpdate()
     {
-        _rb.AddForce(Vector2.right * m_h * m_movePower, ForceMode2D.Force);
+        if (!iswallhit)
+        {
+            _rb.AddForce(Vector2.right * m_h * m_movePower, ForceMode2D.Force);
+        }
     }
 
     void FlipX(float horizontal)
@@ -72,7 +82,16 @@ public class PlayerMove : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        m_isGround = true;
-        count = 0;
+        if (collision.tag == "Ground")
+        {
+            m_isGround = true;
+            iswallhit = false;
+            count = 0;
+        }
+        if(collision.tag == "wall")
+        {
+            iswallhit = true;
+        }
     }
+
 }
