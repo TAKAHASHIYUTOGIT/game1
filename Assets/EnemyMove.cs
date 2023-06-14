@@ -20,17 +20,16 @@ public class EnemyMove : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (transform.position.x > _returnPos[0].position.x)
-        {
-            _dir = -1;
-            _sr.flipX = false;
-        }
-        else if (transform.position.x < _returnPos[1].position.x)
-        {
-            _dir = 1;
-            _sr.flipX = true;
-        }
-        Debug.Log(_dir);
-
+    //    if (transform.position.x > _returnPos[0].position.x)
+    //    {
+    //        _dir = -1;
+    //        _sr.flipX = false;
+    //    }
+    //    else if (transform.position.x < _returnPos[1].position.x)
+    //    {
+    //        _dir = 1;
+    //        _sr.flipX = true;
+    //    }
+    //    Debug.Log(_dir);
     }
 }

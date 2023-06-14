@@ -4,11 +4,15 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerMove : MonoBehaviour
 {
     Rigidbody2D _rb = default;
     SpriteRenderer _sprite = default;
+    [SerializeField] int _hp = 1;
+    //[SerializeField] Text _text;//GameOver
+    //[SerializeField] Text _text1;//Game Clear
     /// <summary>左右移動する力</summary>
     [SerializeField] float m_movePower = 5f;
     /// <summary>ジャンプする力</summary>
@@ -21,34 +25,51 @@ public class PlayerMove : MonoBehaviour
     int count = 0;
     bool m_isGround = false;
     bool iswallhit;
+    bool _isAliving = true;
+    public bool is_Game = true;
+    public int Hp { get { return _hp; } }
     void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
         _sprite = GetComponent<SpriteRenderer>();
-
+        //_text.enabled = false;
     }
 
-    // Update is called once per 
-    private void Update()
-    {//入力を受け取る
-        m_h = Input.GetAxisRaw("Horizontal");
+    // Update is called once per S
+     void Update()
+    {
+        if (is_Game)
+        {//入力を受け取る
+            m_h = Input.GetAxisRaw("Horizontal");
 
-        Vector2 velocity = _rb.velocity;
-        velocity.x = m_h * m_movePower;
-        _rb.velocity = velocity;
+            Vector2 velocity = _rb.velocity;
+            velocity.x = m_h * m_movePower;
+            _rb.velocity = velocity;
 
-        // 各種入力を受け取る
-        if (Input.GetButtonDown("Jump") && count < 2)
-        {
-            _rb.AddForce(Vector2.up * m_jumpPower, ForceMode2D.Impulse);
-            count++;
+            // 各種入力を受け取る
+            if (Input.GetButtonDown("Jump") && count < 2)
+            {
+                _rb.AddForce(Vector2.up * m_jumpPower, ForceMode2D.Impulse);
+                count++;
+            }
+            //設定に応じて左右を反転させる
+            if (m_flipX)
+            {
+                FlipX(m_h);
+            }
+            if (_hp == 0)
+            {
+                //_text.enabled = true;
+            }
         }
-        //設定に応じて左右を反転させる
-        if (m_flipX)
+        else //(!is_Game)
         {
-            FlipX(m_h);
-        }
-    }
+            if (Input.GetKey(KeyCode.Return))
+            {
+                is_Game = true;
+                transform.position = new Vector2(-12, 0.5f);
+            }
+        }    }
     private object AddForce(float m_jumpPower)
     {
         throw new NotImplementedException();
@@ -62,13 +83,8 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    void FlipX(float horizontal)
+    void FlipX(float horizontal)//方向転換
     {
-        /*
-         * 左を入力されたらキャラクターを左に向ける。
-         * 左右を反転させるには、Transform:Scale:X に -1 を掛ける。
-         * Sprite Renderer の Flip:X を操作しても反転する。
-         * */
         m_scaleX = this.transform.localScale.x;
 
         if (horizontal > 0)
@@ -88,10 +104,9 @@ public class PlayerMove : MonoBehaviour
             iswallhit = false;
             count = 0;
         }
-        if(collision.tag == "wall")
+        if (collision.tag == "wall")
         {
             iswallhit = true;
         }
     }
-
 }
